@@ -160,7 +160,72 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  from time import sleep
+  from util import PriorityQueue
+  from sets import Set
+  
+  class Node(object):
+    def __init__(self, current = None, path = [] , count = 0):
+        self.current = current
+        self.path = path
+        self.count = count
+    def getCurrent(self):
+        return self.current
+
+#  print "Start:", problem.getStartState()
+#  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+#  print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  '''
+    procedure UniformCostSearch(Graph, root, goal)
+     node := root, cost = 0
+     frontier := priority queue containing node only
+     explored := empty set
+     do
+       if frontier is empty
+         return failure
+       node := frontier.pop()
+       if node is goal
+         return solution
+       explored.add(node)
+       for each of node's neighbors n
+         if n is not in explored
+           if n is not in frontier
+             frontier.add(n)
+           else if n is in frontier with higher cost
+             replace existing node with n 
+  '''
+  pq = PriorityQueue();
+  node = Node(problem.getStartState())
+  #print node.__dict__
+  visitedNodeList = set()
+  pq.push(node,0)
+  visitedNodeList = {node}
+  if problem.isGoalState(problem.getStartState()):
+      return 1
+  print "="*10
+
+  while pq.isEmpty() is not True:
+      top = pq.pop()
+      current = top.getCurrent()
+      path = top.path
+      count = top.count
+      if(problem.isGoalState(current)):
+          print "path", path
+          sleep(5)
+          return path
+      #print "current:", current, count, path
+      for successor in problem.getSuccessors(current):
+          #print "get Position", successor
+          successorPos = successor[0]
+          successorMov = successor[1]
+          if successorPos not in visitedNodeList:
+              visitedNodeList.add(successorPos)
+              path.append(successorMov)
+              node = Node(successorPos, path, count+1)
+              pq.push(node, count)
+
+  print "="*10
+
 
 def nullHeuristic(state, problem=None):
   """
