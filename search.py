@@ -160,69 +160,60 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
-  from time import sleep
-  from util import PriorityQueue
   from sets import Set
   
-  class Node(object):
-    def __init__(self, current = None, path = [] , count = 0):
-        self.current = current
-        self.path = path
-        self.count = count
-    def getCurrent(self):
-        return self.current
-
-#  print "Start:", problem.getStartState()
-#  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-#  print "Start's successors:", problem.getSuccessors(problem.getStartState())
-  '''
-    procedure UniformCostSearch(Graph, root, goal)
-     node := root, cost = 0
-     frontier := priority queue containing node only
-     explored := empty set
-     do
-       if frontier is empty
-         return failure
-       node := frontier.pop()
-       if node is goal
-         return solution
-       explored.add(node)
-       for each of node's neighbors n
-         if n is not in explored
-           if n is not in frontier
-             frontier.add(n)
-           else if n is in frontier with higher cost
-             replace existing node with n 
-  '''
+  from game import Directions
+  from util import PriorityQueue
+  from searchAgents import manhattanHeuristic;
+  import collections;
   pq = PriorityQueue();
-  node = Node(problem.getStartState())
-  #print node.__dict__
-  visitedNodeList = set()
-  pq.push(node,0)
-  visitedNodeList = {node}
-  if problem.isGoalState(problem.getStartState()):
-      return 1
-  print "="*10
+  nodes = {};
 
-  while pq.isEmpty() is not True:
-      top = pq.pop()
-      current = top.getCurrent()
-      path = top.path
-      count = top.count
-      if(problem.isGoalState(current)):
-          print "path", path
-          sleep(5)
-          return path
-      #print "current:", current, count, path
-      for successor in problem.getSuccessors(current):
-          #print "get Position", successor
-          successorPos = successor[0]
-          successorMov = successor[1]
-          if successorPos not in visitedNodeList:
-              visitedNodeList.add(successorPos)
-              path.append(successorMov)
-              node = Node(successorPos, path, count+1)
-              pq.push(node, count)
+  # this list stores the state of all the nodes that we are traversing
+  explored = [];
+
+  node = Node(None, problem.startState, count=0)
+  pq.push(node.state,0)
+  nodes[node.state] = node
+  
+  if problem.isGoalState(problem.getStartState()):
+      return 1 # Check what to return in this case
+    
+  while not (pq.isEmpty()):
+      cur_state = pq.pop()
+      cur_node = nodes[cur_state]
+      count = nodes[cur_state].count
+      explored.append(cur_state)
+      
+      if(problem.isGoalState(cur_state)):
+          # if yes then traverse from goal to startState using parent attribute of Node class
+          direction_rev = []
+          prev = problem.goal;
+          direction_rev.append(nodes[prev].direction);
+          while prev != problem.startState:
+              prev = nodes[prev].parent;
+              direction_rev.append(nodes[prev].direction);
+              print "-",nodes[prev].__dict__
+          # This will give us path from start to end in reverse order. We simply reverse the list again
+          print direction_rev
+          directions = []
+          for item in reversed(direction_rev):
+              if item is not None:
+                  directions.append(item);
+          print ">>",directions
+          print "+", 
+          return directions;
+
+      # Get the successors of the current node
+      successors = problem.getSuccessors(cur_state);
+
+      for item in successors:
+          successorPos = item[0]
+          successorMov = item[1]
+          if successorPos not in explored:
+              child = Node(cur_state, item[0], count+1, item[1])
+              nodes[child.state] = child
+              pq.push(item[0], count + 1)
 
   print "="*10
 
@@ -313,6 +304,19 @@ def recurseBFS(queue, stack, problem,visitedlist):
   #util.raiseNotDefined()
     
   
+# Node class to hold different values of state
+class Node(object):
+
+  def __init__(self, parent = None, state = None, count = 0, direction = None):
+    self.parent = parent;
+    self.state = state;
+    self.count = count;
+    self.direction = direction;
+
+  def getState(self):
+    return self.state;
+
+
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
