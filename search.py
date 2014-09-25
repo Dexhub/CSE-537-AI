@@ -171,41 +171,35 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
-  "*** YOUR CODE HERE ***"
 
   from game import Directions
   from util import PriorityQueue
   from searchAgents import manhattanHeuristic;
   import collections;
+
+  # Create priority queue to push fringe elements
   open_pq = PriorityQueue();
 
-  start = None;
-  if hasattr(problem, 'startState'):
-    start = problem.startState;
-  else:
-    start = problem.start;
+  start = problem.getStartState();
 
-  # nodes map is used to store the information about nodes class for each state that we expand.
-  # Definition of node class can be found after this method
-  nodes = {};
-
-  # this list stores the state of all the nodes that we are traversing
+  # this list stores the state of all the nodes that are expanded
   closed_list = [];
 
-  # creating node object of the start state and pushing it into priority queue with value 0
-  node = Node(None, start);
-  open_pq.push(node.state, 0);
-  nodes[node.state] = node;
+  # Push the start state to Priority Queue with value 0, so it can be popped first time.
+  open_pq.push((start, 0, []), 0);
 
-  while not (open_pq.isEmpty()):
+  while open_pq.isEmpty() is False:
 
     # Popping node with smallest cost from priority queue
-    cur_state  = open_pq.pop();
-    cur_node = nodes[cur_state];
+    curr_state, cost_till_curr_state, path_till_curr_state  = open_pq.pop();
 
-    # Append current state to closed list as we are expanding it
-    closed_list.append(cur_state);
+    # check if current state is the goal state. If it is then return the path_till_curr_state. Initially I was
+    # backtracking till start state and then return the reverse of this backtracked direction list. By passing path_till_successor
+    # every time I was able to avoid that unnecessary computation and make code more cleaner
+    if problem.isGoalState(curr_state):
+      return path_till_curr_state;
 
+    '''
     # check if current state is the goal state
     if problem.isGoalState(cur_state):
       # if yes then traverse from goal to startState using parent attribute of Node class
@@ -223,34 +217,32 @@ def aStarSearch(problem, heuristic=nullHeuristic):
           directions.append(item);
 
       return directions;
+    '''
 
-    # Get the successors of the current node
-    successors = problem.getSuccessors(cur_state);
+    # if current state is not in closed list then we get all the successors of the curr_state.
+    # For every item in successor, we check if its in closed list. If it's not then we calculate the
+    # f = g + h value for it and push it to priority queue.
 
-    # For every item in successor, we check if its in closed list. If it's not then we add it after calculating
-    # f value, Node creation and pushing it into priority queue.
-    for item in successors:
-      if item[0] not in closed_list:
-        g = cur_node.g + heuristic(cur_state, problem);
-        h = heuristic(item[0], problem);
-        f = g + h;
-        child = Node(cur_state, item[0], f, g, h, item[1]);
-        nodes[child.state] = child;
-        open_pq.push(item[0], f);
+    if curr_state not in closed_list:
+      # Get the successors of the current node
+      successors = problem.getSuccessors(curr_state);
+      successors.reverse()
+      for item in successors:
+        if item[0] not in closed_list:
+          # h value is manhattan distance between current state to goal
+          h = heuristic(item[0], problem);
+          # g value is the cost to reach current + cost to reach successor from current state which is 1 in our case
+          g = cost_till_curr_state + item[2];
+          f = g + h;
+          # Add successor to path
+          path_till_successor = path_till_curr_state + [item[1]]
+          # Push successor state, cost and path till successor to priority queue
+          open_pq.push((item[0], g, path_till_successor), f);
+    # Append current state to closed list as it's expanded
+    closed_list.append(curr_state);
 
-# Node class to hold different values of state
-class Node(object):
+  util.raiseNotDefined()
 
-  def __init__(self, parent = None, state = None, f = 0, g = 0, h = 0, direction = None):
-    self.parent = parent;
-    self.state = state;
-    self.f = f;
-    self.g = g;
-    self.h = h;
-    self.direction = direction;
-
-  def getState(self):
-    return self.state;
 
 # Abbreviations
 bfs = breadthFirstSearch

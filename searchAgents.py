@@ -246,6 +246,12 @@ def manhattanHeuristic(position, problem, info={}):
   xy2 = problem.goal
   return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
+def manhattanHeuristicBetweenTwo(start, end, info={}):
+  "The Manhattan distance heuristic for a PositionSearchProblem"
+  xy1 = start
+  xy2 = end
+  return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
 def euclideanHeuristic(position, problem, info={}):
   "The Euclidean distance heuristic for a PositionSearchProblem"
   xy1 = position
@@ -435,10 +441,24 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount'] = problem.walls.count()
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
+  # Here we calculate manhattan distance from goal for each food point and we return the maximum distance to make
+  # our heuristic admissible. Maximum return will ensure that our subsequent heuristics will be less than the current
+  # we are returning. Optimality will be ensured by A* here. This expands around 9500
   position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  return 0
-  
+
+  # initialize maximum distance to 0
+  max_dist=0;
+
+  # Get all the points where food is available
+  points = foodGrid.asList()
+
+  for item in points:
+     dist=abs(position[0] - item[0]) + abs(position[1] - item[1])
+     if dist>max_dist:
+       max_dist=dist
+       food_pos=item
+  return max_dist
+
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
   def registerInitialState(self, state):
