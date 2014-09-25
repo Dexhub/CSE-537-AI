@@ -124,7 +124,7 @@ def breadthFirstSearch(problem):
   w = Directions.WEST
   n = Directions.NORTH
   e = Directions.EAST
-
+  
   visitedlist = []
   "*** YOUR CODE HERE ***"
   qu = Queue()
@@ -215,17 +215,19 @@ def recurseDFS(stack, problem,visitedlist):
   return 0
   #util.raiseNotDefined()
 
+
 def recurseBFS(queue, stack, problem,visitedlist):
   "Find out the path by popping out elements from stack one by one, filling successors in it."
   "Instert successors only when they are not visited"
   "Maintain a variable visitedlist to check the states visited"
   "*** YOUR CODE HERE ***"
   currentState = queue.pop()
+  print "currentState - "+ str(currentState)
   if len(currentState) == 2:
     currentPosition = currentState
   else:
     currentPosition = currentState[0]
-  #print "Current state is " + str(currentPosition)
+  print "Current state is " + str(currentPosition)
 
   
   for successor in problem.getSuccessors(currentPosition):
@@ -234,16 +236,16 @@ def recurseBFS(queue, stack, problem,visitedlist):
       if(problem.isGoalState(successorPosition)):
         stack.push({'child':successor,'parent':currentState})
         queue.push(successor)
-        #print "Pushed " + str(successor) + "in stack"
+        print "Pushed " + str(successor) + "in stack"
         print "Goal Achieved"
         return 1
       stack.push({'child':successor,'parent':currentState})
       queue.push(successor)
       visitedlist.append(successorPosition)
-      #print "Pushed " + str(successor) + "in stack"
+      print "Pushed " + str(successor) + "in stack"
   if recurseBFS(queue, stack, problem, visitedlist) == 1:
     return 1	
-  #print "Current stack is " + str(stack)
+  print "Current stack is " + str(stack)
   return 0
   #util.raiseNotDefined()
     
