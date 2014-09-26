@@ -85,77 +85,29 @@ def depthFirstSearch(problem):
   util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
-  "Search the shallowest nodes in the search tree first. [p 81]"
-  "*** YOUR CODE HERE ***"
-  from game import Directions
-  from util import Stack, Queue
-  s = Directions.SOUTH
-  w = Directions.WEST
-  n = Directions.NORTH
-  e = Directions.EAST
 
-  visitedlist = []
-  "*** YOUR CODE HERE ***"
-  qu = Queue()
-  st = Stack()
-  outputlist = []
-  st.push({'child':problem.getStartState(),'parent':None})
-  qu.push(problem.getStartState())
-  visitedlist.append(problem.getStartState())
-  pa = None
-  if recurseBFS(qu,st,problem,visitedlist) == 0:
-    print "No Path exists"
-  else:
-    flag = 1
-    while not st.isEmpty():
-      value = st.pop()
-      #print "parent -" + str(value['parent']) + " ch-"+ str(value['child']) +"pa -"+ str(pa)
-      if not value['parent'] or value['child'] == pa or flag == 1:
-        flag = 0
-        ch , pa = value['child'], value['parent']
-        if value['child'][1] == 'South':
-          outputlist.append(s)
-        elif value['child'][1] == 'North':
-          outputlist.append(n)
-        elif value['child'][1] == 'East':
-          outputlist.append(e)
-        elif value['child'][1] == 'West':
-          outputlist.append(w)
+  open_pq=util.Queue()
+  closed_list=[];
+  Successors=[]
 
-  #print str(outputlist[::-1])
-  return outputlist[::-1]
+  open_pq.push((problem.getStartState(),[]))
 
-def recurseBFS(queue, stack, problem,visitedlist):
-  "Find out the path by popping out elements from stack one by one, filling successors in it."
-  "Instert successors only when they are not visited"
-  "Maintain a variable visitedlist to check the states visited"
-  "*** YOUR CODE HERE ***"
-  currentState = queue.pop()
-  if len(currentState) == 2:
-    currentPosition = currentState
-  else:
-    currentPosition = currentState[0]
-  #print "Current state is " + str(currentPosition)
+  while open_pq.isEmpty() is False:
+      curr_state, path_till_curr_state=open_pq.pop()
 
+      if problem.isGoalState(curr_state) is True:
+        return path_till_curr_state
 
-  for successor in problem.getSuccessors(currentPosition):
-    successorPosition = successor[0]
-    if not successorPosition in visitedlist:
-      if(problem.isGoalState(successorPosition)):
-        stack.push({'child':successor,'parent':currentState})
-        queue.push(successor)
-        #print "Pushed " + str(successor) + "in stack"
-        print "Goal Achieved"
-        return 1
-      stack.push({'child':successor,'parent':currentState})
-      queue.push(successor)
-      visitedlist.append(successorPosition)
-      #print "Pushed " + str(successor) + "in stack"
-  if recurseBFS(queue, stack, problem, visitedlist) == 1:
-    return 1
-  #print "Current stack is " + str(stack)
-  return 0
-  #util.raiseNotDefined() 
+      if curr_state not in closed_list:
+        Successors=problem.getSuccessors(curr_state)
+        Successors.reverse()
+
+        for item in Successors:
+          if item not in closed_list:
+            temp=path_till_curr_state + [item[1]]
+            open_pq.push((item[0],temp))
+
+      closed_list.append(curr_state);
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
