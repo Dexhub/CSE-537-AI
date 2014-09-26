@@ -117,6 +117,81 @@ def depthFirstSearch(problem):
     
   #util.raiseNotDefined()
 
+def recurseDFS(stack, problem,visitedlist):
+  "Find out the path by popping out elements from stack one by one, filling successors in it."
+  "Instert successors only when they are not visited"
+  "Maintain a variable visitedlist to check the states visited"
+  "*** YOUR CODE HERE ***"
+  currentState = stack.pop()
+  stack.push(currentState);
+  if len(currentState) == 2:
+    currentPosition = currentState
+  else:
+    currentPosition = currentState[0]
+  print "Current state is " + str(currentPosition)
+  #if not type(currentPosition) is tuple:
+  #  for value in currentState:
+  #    if type(value) is tuple:
+  #      currentPosition = value
+  #      break
+  #print type(currentPosition[2])     
+  #for value in currentPosition:
+  #  print type(value)
+  #print str(currentPosition)
+  
+  for successor in problem.getSuccessors(currentPosition):
+    successorPosition = successor[0]
+    
+    if not successorPosition in visitedlist:
+      if(problem.isGoalState(successorPosition)):
+        stack.push(successor)
+        print "Pushed " + str(successor) + "in stack"
+        print "Goal Achieved"
+        return 1
+      stack.push(successor)
+      visitedlist.append(successorPosition)
+      print "Pushed " + str(successor) + "in stack"
+      if recurseDFS(stack, problem, visitedlist) == 1:
+        return 1	
+  stack.pop()  
+    #print "Current stack is " + str(stack)
+  return 0
+  #util.raiseNotDefined()
+
+
+
+def recurseBFS(queue, stack, problem,visitedlist):
+  "Find out the path by popping out elements from stack one by one, filling successors in it."
+  "Instert successors only when they are not visited"
+  "Maintain a variable visitedlist to check the states visited"
+  "*** YOUR CODE HERE ***"
+  currentState = queue.pop()
+  if len(currentState) == 2:
+    currentPosition = currentState
+  else:
+    currentPosition = currentState[0]
+  #print "Current state is " + str(currentPosition)
+
+
+  for successor in problem.getSuccessors(currentPosition):
+    successorPosition = successor[0]
+    if not successorPosition in visitedlist:
+      if(problem.isGoalState(successorPosition)):
+        stack.push({'child':successor,'parent':currentState})
+        queue.push(successor)
+        #print "Pushed " + str(successor) + "in stack"
+        print "Goal Achieved"
+        return 1
+      stack.push({'child':successor,'parent':currentState})
+      queue.push(successor)
+      visitedlist.append(successorPosition)
+      #print "Pushed " + str(successor) + "in stack"
+  if recurseBFS(queue, stack, problem, visitedlist) == 1:
+    return 1
+  #print "Current stack is " + str(stack)
+  return 0
+  #util.raiseNotDefined() 
+      
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
@@ -157,38 +232,6 @@ def breadthFirstSearch(problem):
   #print str(outputlist[::-1])
   return outputlist[::-1]
 
-def recurseBFS(queue, stack, problem,visitedlist):
-  "Find out the path by popping out elements from stack one by one, filling successors in it."
-  "Instert successors only when they are not visited"
-  "Maintain a variable visitedlist to check the states visited"
-  "*** YOUR CODE HERE ***"
-  currentState = queue.pop()
-  if len(currentState) == 2:
-    currentPosition = currentState
-  else:
-    currentPosition = currentState[0]
-  #print "Current state is " + str(currentPosition)
-
-
-  for successor in problem.getSuccessors(currentPosition):
-    successorPosition = successor[0]
-    if not successorPosition in visitedlist:
-      if(problem.isGoalState(successorPosition)):
-        stack.push({'child':successor,'parent':currentState})
-        queue.push(successor)
-        #print "Pushed " + str(successor) + "in stack"
-        print "Goal Achieved"
-        return 1
-      stack.push({'child':successor,'parent':currentState})
-      queue.push(successor)
-      visitedlist.append(successorPosition)
-      #print "Pushed " + str(successor) + "in stack"
-  if recurseBFS(queue, stack, problem, visitedlist) == 1:
-    return 1
-  #print "Current stack is " + str(stack)
-  return 0
-  #util.raiseNotDefined() 
-      
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
