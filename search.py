@@ -12,6 +12,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from util import Stack, Queue
 
 class SearchProblem:
   """
@@ -76,24 +77,55 @@ def depthFirstSearch(problem):
   
   To get started, you might want to try some of these simple commands to
   understand the search problem that is being passed in:
-  
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
+  
+  from game import Directions
+  s = Directions.SOUTH
+  w = Directions.WEST
+  n = Directions.NORTH
+  e = Directions.EAST
+  
+  #print "Start:", problem.getStartState()
+  #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+  #print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  visitedlist = []
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  st = Stack()
+  outputlist = []
+  st.push(problem.getStartState())
+  visitedlist.append(problem.getStartState())
+  recurseDFS(st,problem,visitedlist)
+  if st.isEmpty():
+    print "No Path exist"
+  else:
+    while not st.isEmpty():
+      value = st.pop()
+      if len(value) == 2:
+        continue
+      print value[1]
+      if value[1] == 'South':
+        outputlist.append(s)
+      elif value[1] == 'North':
+        outputlist.append(n)
+      elif value[1] == 'East':
+        outputlist.append(e)
+      elif value[1] == 'West':
+        outputlist.append(w)
+      
+  #print str(outputlist[::-1])
+  return outputlist[::-1]
+    
+  #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
   from game import Directions
-  from util import Stack, Queue
   s = Directions.SOUTH
   w = Directions.WEST
   n = Directions.NORTH
   e = Directions.EAST
-
+  
   visitedlist = []
   "*** YOUR CODE HERE ***"
   qu = Queue()
@@ -121,7 +153,7 @@ def breadthFirstSearch(problem):
           outputlist.append(e)
         elif value['child'][1] == 'West':
           outputlist.append(w)
-
+        
   #print str(outputlist[::-1])
   return outputlist[::-1]
 
@@ -160,7 +192,69 @@ def recurseBFS(queue, stack, problem,visitedlist):
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  from sets import Set
+  
+  from game import Directions
+  from util import PriorityQueue
+  from searchAgents import manhattanHeuristic;
+  import collections;
+  pq = PriorityQueue();
+  nodes = {};
+
+  # this list stores the state of all the nodes that we are traversing
+  explored = [];
+
+  node = UCSNode(None, problem.startState, count=0)
+  pq.push(node.state,0)
+  nodes[node.state] = node
+  
+  if problem.isGoalState(problem.getStartState()):
+      return 1 # Check what to return in this case
+    
+  while not (pq.isEmpty()):
+      cur_state = pq.pop()
+      cur_node = nodes[cur_state]
+      count = nodes[cur_state].count
+      explored.append(cur_state)
+      
+      if(problem.isGoalState(cur_state)):
+          # if yes then traverse from goal to startState using parent attribute of UCSNode class
+          direction_rev = []
+          prev = problem.goal;
+          direction_rev.append(nodes[prev].direction);
+          while prev != problem.startState:
+              prev = nodes[prev].parent;
+              direction_rev.append(nodes[prev].direction);
+          # This will give us path from start to end in reverse order. We simply reverse the list again
+          directions = []
+          for item in reversed(direction_rev):
+              if item is not None:
+                  directions.append(item);
+          return directions;
+
+      # Get the successors of the current node
+      successors = problem.getSuccessors(cur_state);
+
+      for item in successors:
+          successorPos = item[0]
+          successorMov = item[1]
+          if successorPos not in explored:
+              child = UCSNode(cur_state, item[0], count+1, item[1])
+              nodes[child.state] = child
+              pq.push(item[0], count + 1)
+
+
+# UCSNode class to hold different values of state
+class UCSNode(object):
+
+  def __init__(self, parent = None, state = None, count = 0, direction = None):
+    self.parent = parent;
+    self.state = state;
+    self.count = count;
+    self.direction = direction;
+
+  def getState(self):
+    return self.state;
 
 def nullHeuristic(state, problem=None):
   """

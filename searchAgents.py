@@ -268,44 +268,44 @@ class CornersProblem(search.SearchProblem):
 
   You must select a suitable state space and successor function
   """
-
+  
   def __init__(self, startingGameState):
     """
     Stores the walls, pacman's starting position and corners.
     """
     self.walls = startingGameState.getWalls()
     self.startingPosition = startingGameState.getPacmanPosition()
-    top, right = self.walls.height-2, self.walls.width-2
+    top, right = self.walls.height-2, self.walls.width-2 
     self.corners = ((1,1), (1,top), (right, 1), (right, top))
     for corner in self.corners:
       if not startingGameState.hasFood(*corner):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
-
+    
     "*** YOUR CODE HERE ***"
-
+    
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-
+    
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-
+       
   def getSuccessors(self, state):
     """
     Returns successor states, the actions they require, and a cost of 1.
-
+    
      As noted in search.py:
-         For a given state, this should return a list of triples,
-     (successor, action, stepCost), where 'successor' is a
+         For a given state, this should return a list of triples, 
+     (successor, action, stepCost), where 'successor' is a 
      successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental
+     required to get there, and 'stepCost' is the incremental 
      cost of expanding to that successor
     """
-
+    
     successors = []
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
       # Add a successor state to the successor list if the action is legal
@@ -314,9 +314,9 @@ class CornersProblem(search.SearchProblem):
       #   dx, dy = Actions.directionToVector(action)
       #   nextx, nexty = int(x + dx), int(y + dy)
       #   hitsWall = self.walls[nextx][nexty]
-
+      
       "*** YOUR CODE HERE ***"
-
+      
     self._expanded += 1
     return successors
 
@@ -337,12 +337,12 @@ class CornersProblem(search.SearchProblem):
 def cornersHeuristic(state, problem):
   """
   A heuristic for the CornersProblem that you defined.
-
-    state:   The current search state
+  
+    state:   The current search state 
              (a data structure you chose in your search problem)
-
-    problem: The CornersProblem instance for this layout.
-
+    
+    problem: The CornersProblem instance for this layout.  
+    
   This function should always return a number that is a lower bound
   on the shortest path from the state to a goal of the problem; i.e.
   it should be admissible.  (You need not worry about consistency for
@@ -350,7 +350,7 @@ def cornersHeuristic(state, problem):
   """
   corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
+  
   "*** YOUR CODE HERE ***"
   return 0 # Default to trivial solution
 
@@ -362,12 +362,12 @@ class AStarCornersAgent(SearchAgent):
 
 class FoodSearchProblem:
   """
-  A search problem associated with finding the a path that collects all of the
+  A search problem associated with finding the a path that collects all of the 
   food (dots) in a Pacman game.
-
+  
   A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
     pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
-    foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
+    foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food 
   """
   def __init__(self, startingGameState):
     self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
@@ -375,10 +375,10 @@ class FoodSearchProblem:
     self.startingGameState = startingGameState
     self._expanded = 0
     self.heuristicInfo = {} # A dictionary for the heuristic to store information
-
+      
   def getStartState(self):
     return self.start
-
+  
   def isGoalState(self, state):
     return state[1].count() == 0
 
@@ -419,22 +419,22 @@ class AStarFoodSearchAgent(SearchAgent):
 def foodHeuristic(state, problem):
   """
   Your heuristic for the FoodSearchProblem goes here.
-
+  
   This heuristic must be consistent to ensure correctness.  First, try to come up
   with an admissible heuristic; almost all admissible heuristics will be consistent
   as well.
-
+  
   If using A* ever finds a solution that is worse uniform cost search finds,
   your heuristic is *not* consistent, and probably not admissible!  On the other hand,
   inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
-
-  The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a
+  
+  The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a 
   Grid (see game.py) of either True or False. You can call foodGrid.asList()
   to get a list of food coordinates instead.
-
+  
   If you want access to info like walls, capsules, etc., you can query the problem.
   For example, problem.walls gives you a Grid of where the walls are.
-
+  
   If you want to *store* information to be reused in other calls to the heuristic,
   there is a dictionary called problem.heuristicInfo that you can use. For example,
   if you only want to count the walls once and store that value, try:
