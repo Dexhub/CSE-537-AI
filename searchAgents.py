@@ -282,8 +282,6 @@ class CornersProblem(search.SearchProblem):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
     
-    "*** YOUR CODE HERE ***"
-    
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"

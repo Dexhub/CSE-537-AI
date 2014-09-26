@@ -68,6 +68,8 @@ def tinyMazeSearch(problem):
   w = Directions.WEST
   return  [s,s,w,s,w,w,s,w]
 
+#############################################################
+
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
@@ -84,17 +86,16 @@ def depthFirstSearch(problem):
   w = Directions.WEST
   n = Directions.NORTH
   e = Directions.EAST
-  
-  #print "Start:", problem.getStartState()
-  #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  #print "Start's successors:", problem.getSuccessors(problem.getStartState())
-  visitedlist = []
-  "*** YOUR CODE HERE ***"
-  st = Stack()
-  outputlist = []
-  st.push(problem.getStartState())
+  #### Global ###
+  visitedlist = [] # To keep track of visited nodes
+  st = Stack() # stack
+  outputlist = [] # Final output
+  ################
+  st.push(problem.getStartState()) # initialization 
   visitedlist.append(problem.getStartState())
+  ## updating visited list recursively
   recurseDFS(st,problem,visitedlist)
+
   if st.isEmpty():
     print "No Path exist"
   else:
@@ -112,10 +113,7 @@ def depthFirstSearch(problem):
       elif value[1] == 'West':
         outputlist.append(w)
       
-  #print str(outputlist[::-1])
   return outputlist[::-1]
-    
-  #util.raiseNotDefined()
 
 def recurseDFS(stack, problem,visitedlist):
   "Find out the path by popping out elements from stack one by one, filling successors in it."
@@ -128,16 +126,6 @@ def recurseDFS(stack, problem,visitedlist):
     currentPosition = currentState
   else:
     currentPosition = currentState[0]
-  print "Current state is " + str(currentPosition)
-  #if not type(currentPosition) is tuple:
-  #  for value in currentState:
-  #    if type(value) is tuple:
-  #      currentPosition = value
-  #      break
-  #print type(currentPosition[2])     
-  #for value in currentPosition:
-  #  print type(value)
-  #print str(currentPosition)
   
   for successor in problem.getSuccessors(currentPosition):
     successorPosition = successor[0]
@@ -145,21 +133,15 @@ def recurseDFS(stack, problem,visitedlist):
     if not successorPosition in visitedlist:
       if(problem.isGoalState(successorPosition)):
         stack.push(successor)
-        print "Pushed " + str(successor) + "in stack"
-        print "Goal Achieved"
         return 1
       stack.push(successor)
       visitedlist.append(successorPosition)
-      print "Pushed " + str(successor) + "in stack"
       if recurseDFS(stack, problem, visitedlist) == 1:
         return 1	
   stack.pop()  
-    #print "Current stack is " + str(stack)
   return 0
-  #util.raiseNotDefined()
 
-
-
+#############################################################
 def recurseBFS(queue, stack, problem,visitedlist):
   "Find out the path by popping out elements from stack one by one, filling successors in it."
   "Instert successors only when they are not visited"
@@ -170,8 +152,6 @@ def recurseBFS(queue, stack, problem,visitedlist):
     currentPosition = currentState
   else:
     currentPosition = currentState[0]
-  #print "Current state is " + str(currentPosition)
-
 
   for successor in problem.getSuccessors(currentPosition):
     successorPosition = successor[0]
@@ -179,18 +159,13 @@ def recurseBFS(queue, stack, problem,visitedlist):
       if(problem.isGoalState(successorPosition)):
         stack.push({'child':successor,'parent':currentState})
         queue.push(successor)
-        #print "Pushed " + str(successor) + "in stack"
-        print "Goal Achieved"
         return 1
       stack.push({'child':successor,'parent':currentState})
       queue.push(successor)
       visitedlist.append(successorPosition)
-      #print "Pushed " + str(successor) + "in stack"
   if recurseBFS(queue, stack, problem, visitedlist) == 1:
     return 1
-  #print "Current stack is " + str(stack)
   return 0
-  #util.raiseNotDefined() 
       
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
@@ -202,7 +177,7 @@ def breadthFirstSearch(problem):
   e = Directions.EAST
   
   visitedlist = []
-  "*** YOUR CODE HERE ***"
+  
   qu = Queue()
   st = Stack()
   outputlist = []
@@ -216,7 +191,6 @@ def breadthFirstSearch(problem):
     flag = 1
     while not st.isEmpty():
       value = st.pop()
-      #print "parent -" + str(value['parent']) + " ch-"+ str(value['child']) +"pa -"+ str(pa)
       if not value['parent'] or value['child'] == pa or flag == 1:
         flag = 0
         ch , pa = value['child'], value['parent']
@@ -229,9 +203,9 @@ def breadthFirstSearch(problem):
         elif value['child'][1] == 'West':
           outputlist.append(w)
         
-  #print str(outputlist[::-1])
   return outputlist[::-1]
 
+###############################################
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
@@ -244,7 +218,7 @@ def uniformCostSearch(problem):
   pq = PriorityQueue();
   nodes = {};
 
-  # this list stores the state of all the nodes that we are traversing
+  # This list stores the state of all the nodes that we are traversing
   explored = [];
 
   node = UCSNode(None, problem.startState, count=0)
@@ -261,7 +235,7 @@ def uniformCostSearch(problem):
       explored.append(cur_state)
       
       if(problem.isGoalState(cur_state)):
-          # if yes then traverse from goal to startState using parent attribute of UCSNode class
+          # If yes then traverse from goal to startState using parent attribute of UCSNode class
           direction_rev = []
           prev = problem.goal;
           direction_rev.append(nodes[prev].direction);
@@ -298,6 +272,7 @@ class UCSNode(object):
 
   def getState(self):
     return self.state;
+#################################################
 
 def nullHeuristic(state, problem=None):
   """
